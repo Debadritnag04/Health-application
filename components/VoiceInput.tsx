@@ -42,7 +42,11 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, userProfile, t, c
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error", event.error);
         setIsListening(false);
-        setError(t.voice.error);
+        if (event.error === 'not-allowed') {
+            setError(t.voice.permissionError || "Microphone denied");
+        } else {
+            setError(t.voice.error);
+        }
         setTimeout(() => setError(null), 3000);
       };
 

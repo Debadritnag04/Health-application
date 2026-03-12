@@ -37,11 +37,6 @@ export interface AnalysisResult {
   authenticityConfidence?: string;
   redFlags?: string[];
   
-  // Space
-  localizedExplanation?: string;
-  wellnessSuggestions?: string[];
-  culturalNotes?: string;
-
   // Water
   waterQualityRisk?: 'Low' | 'Moderate' | 'High';
   reportSummary?: string;
@@ -57,9 +52,36 @@ export interface AnalysisResult {
     instructions: string;
     confidence: 'High' | 'Medium' | 'Low';
   }>;
+  graphologyAnalysis?: Array<{ // New field for handwriting analysis
+    observedStroke: string;
+    interpretedAs: string;
+    confidence: string;
+    strokePressure?: string;
+    slant?: string;
+  }>;
   verificationRequired?: boolean;
 
+  // Space (LifeLoop Dashboard)
+  localizedExplanation?: string; // Legacy field, kept for compatibility
+  culturalNotes?: string;
+  
+  // New Space Dashboard Fields
+  dashboardContext?: string; // "What this means for you"
+  actionableTips?: string[]; // "What you can do today"
+  wellnessStrip?: Array<{
+    title: string;
+    type: 'Breathing' | 'Movement' | 'Sleep' | 'Nutrition' | 'Mindfulness';
+    instruction: string;
+  }>;
+  newsFeed?: Array<{
+    headline: string;
+    summary: string;
+    source: string;
+    relevance: string;
+  }>;
+  
   // Common
+  wellnessSuggestions?: string[]; // Legacy, map to tips if needed
   reasoningSummary: string; // For Trust Panel
   safetyAdvice: string; // "When to seek help" or "Safety Advice"
   reassuranceLine: string; // The closing supportive line
@@ -67,16 +89,20 @@ export interface AnalysisResult {
 }
 
 export interface IntentResult {
-  targetElement: ElementType;
+  action: 'NAVIGATE_ELEMENT' | 'NAVIGATE_DASHBOARD' | 'EXPLAIN';
+  targetElement?: ElementType;
   reasoning: string;
 }
 
-export type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja';
+export type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'hi' | 'bn';
 export type Tone = 'calm' | 'neutral' | 'supportive';
+export type HealthStatus = 'calm' | 'active' | 'focused';
 
 export interface UserProfile {
+  name: string;
   language: Language;
   tone: Tone;
+  status: HealthStatus;
   voiceResponse: boolean;
   accessibility: {
     largeText: boolean;

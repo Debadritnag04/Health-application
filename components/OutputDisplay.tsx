@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnalysisResult, ElementType } from '../types';
 import { ELEMENTS } from '../constants';
 
@@ -10,6 +10,12 @@ interface OutputDisplayProps {
 
 const OutputDisplay: React.FC<OutputDisplayProps> = ({ element, result, t }) => {
   const config = ELEMENTS[element];
+  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
+
+  // Reset feedback when the result changes (new analysis)
+  useEffect(() => {
+    setFeedback(null);
+  }, [result]);
 
   return (
     <div className="glass-card rounded-3xl overflow-hidden animate-slide-up h-full flex flex-col">
@@ -199,6 +205,48 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({ element, result, t }) => 
            <p className="text-lg font-light text-white/80 italic font-display">
              "{result.reassuranceLine}"
            </p>
+        </div>
+
+        {/* Feedback Section */}
+        <div className="mt-8 flex flex-col items-center gap-4 animate-fade-in">
+          <p className="text-[10px] text-gray-500 uppercase tracking-widest">Was this helpful?</p>
+          <div className="flex gap-4">
+             <button
+               onClick={() => setFeedback('up')}
+               disabled={feedback !== null}
+               className={`p-3 rounded-xl border transition-all duration-300 ${
+                 feedback === 'up' 
+                   ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 scale-110 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                   : feedback === 'down' 
+                     ? 'opacity-30 border-transparent text-gray-600'
+                     : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+               }`}
+               aria-label="Helpful"
+             >
+               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+               </svg>
+             </button>
+             <button
+               onClick={() => setFeedback('down')}
+               disabled={feedback !== null}
+               className={`p-3 rounded-xl border transition-all duration-300 ${
+                 feedback === 'down' 
+                   ? 'bg-red-500/20 border-red-500/50 text-red-400 scale-110 shadow-[0_0_15px_rgba(239,68,68,0.2)]' 
+                   : feedback === 'up' 
+                     ? 'opacity-30 border-transparent text-gray-600'
+                     : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+               }`}
+               aria-label="Not Helpful"
+             >
+               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+               </svg>
+             </button>
+          </div>
+          {feedback && (
+            <span className="text-xs text-emerald-400 animate-fade-in font-medium">Thank you for your feedback</span>
+          )}
         </div>
 
       </div>
